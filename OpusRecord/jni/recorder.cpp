@@ -14,13 +14,11 @@ static SLObjectItf recorderObject = NULL;
 static SLRecordItf recorderRecord;
 static SLAndroidSimpleBufferQueueItf recorderBufferQueue;
 
-// 5 seconds of recorded audio at 16 kHz mono, 16-bit signed little endian
 const int SRATE=16000;
 const int NBUF=2;
 const int BUFFER_LEN = SRATE;
 static short recBuffer[NBUF][BUFFER_LEN];
 
-// create the engine and output mix objects
 void createEngine()
 {
     SLresult result;
@@ -39,14 +37,11 @@ void createEngine()
 }
 
 // this callback handler is called every time a buffer finishes recording
-
 static int last_buffer_index = 0;
 void bqRecorderCallback(SLAndroidSimpleBufferQueueItf bq, void *context)
 {
     xassert(bq == recorderBufferQueue);
     xassert(NULL == context);
-    // for streaming recording, here we would call Enqueue to give recorder the next buffer to fill
-    // but instead, this is a one-time buffer so we stop recording
 	SLAndroidSimpleBufferQueueState state;
     SLresult res = (*bq) ->GetState( bq, &state );
     xassert(SL_RESULT_SUCCESS == res);
