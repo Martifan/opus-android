@@ -2,7 +2,7 @@
 #define __OPUSENC_H
 
 #include <opus_types.h>
-
+#include "xopus_file_encode.h"
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(X) gettext(X)
@@ -18,8 +18,6 @@
 #endif
 
 #define xtype opus_int16
-
-typedef long (*audio_read_func)(void *src, xtype *buffer, int samples);
 
 typedef struct
 {

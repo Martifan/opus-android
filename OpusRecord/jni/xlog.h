@@ -9,7 +9,6 @@ extern "C"
 void android_log(android_LogPriority type, const char *fmt, ...);
 #define LOGI(...) android_log(ANDROID_LOG_INFO, __VA_ARGS__)
 #define LOGW(...) android_log(ANDROID_LOG_WARN, __VA_ARGS__)
-#define LOGW1(A, ...) android_log(ANDROID_LOG_WARN, __VA_ARGS__)
 #define LOGE(...) android_log(ANDROID_LOG_ERROR, __VA_ARGS__)
 
 

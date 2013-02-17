@@ -7,8 +7,7 @@
 #include "xlog.h"
 
 extern "C"{
-typedef long (*audio_read_func)(void *src, short *buffer, int samples);
-void opus_file_encode( const char* outFile, int tkrate, int tkchannels, int tkendianness, int tksamplesize, audio_read_func tk_readfunc );
+#include "opusenc/xopus_file_encode.h"
 }
 
 
@@ -47,7 +46,7 @@ void setBuffer( short* b, int nb )
     xassert( enc_buffer == 0 );
     if(b == 0 ){  // Stop recording
     	enc_error = 2;
-    } else if( enc_buffer != 0 ){
+    } else if( enc_buffer != 0 ){ // we only touch things when enc_buffer==0
     	enc_error = 1;
     	LOGW("Buffer overflow");
     } else {  // set the new buffer
@@ -63,8 +62,9 @@ void setBuffer( short* b, int nb )
 long getBuffer(void *src, short *buffer, int n)
 {
 	if( enc_nbuf == 0 ){
+		LOGI("encoder: empty");
 		enc_total_clocks += (clock() - enc_start_clocks );
-		pthread_mutex_lock(&enc_mutex);
+		pthread_mutex_lock(&enc_mutex);  // we only need the lock when empty
 		enc_buffer = 0;
 		if( enc_error == 0 ){
 			pthread_cond_wait(&enc_cond, &enc_mutex);
@@ -82,7 +82,6 @@ long getBuffer(void *src, short *buffer, int n)
 	memcpy( buffer, enc_buffer, n*sizeof(*buffer) );
 	enc_nbuf -= n;
 	enc_buffer += n;
-	LOGI( "got: %i %i", n, enc_nbuf);
 	return n;
 }
 
