@@ -98,7 +98,7 @@ static inline int oe_write_page(ogg_page *page, FILE *fp)
 #include "../xlog.h"
 
 #define printf LOGW
-#define fprintf LOGW1
+#define fprintf(A, ... ) LOGW(__VA_ARGS__)
 
 
 
