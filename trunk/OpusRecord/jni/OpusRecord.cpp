@@ -10,28 +10,6 @@ extern "C"{
 #include "opusenc/xopus_file_encode.h"
 }
 
-
-extern "C"
-jint Java_anofax_opusrecord_Native_ntest(JNIEnv* env, jclass clazz, jint a, jstring s )
-{
-	LOGI("native is super");
-	return 12;
-	/*
-	const JNIEnv e = *env;
-	const char* ss = e->GetStringUTFChars( env, s, 0 );
-	android_log( "logging %s:", ss);
-	optest(ss);
-	android_log( "logging %d:", 3);
-	*/
-}
-
-
-extern "C"
-void Java_anofax_opusrecord_Native_initEncoder(JNIEnv* env, jclass clazz)
-{
-
-}
-
 static pthread_mutex_t enc_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t enc_cond = PTHREAD_COND_INITIALIZER;
 static int enc_error = 0;

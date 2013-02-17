@@ -1,7 +1,6 @@
 package anofax.opusrecord;
 
 public class Native {
-    public static native int ntest(int x, String s);
     public static native void initAudio();
     public static native void startRecorder();
     public static native void stopRecorder();
