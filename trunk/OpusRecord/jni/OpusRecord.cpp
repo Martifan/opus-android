@@ -43,7 +43,6 @@ static clock_t enc_total_clocks;
 void setBuffer( short* b, int nb )
 {
     pthread_mutex_lock(&enc_mutex);
-    xassert( enc_buffer == 0 );
     if(b == 0 ){  // Stop recording
     	enc_error = 2;
     } else if( enc_buffer != 0 ){ // we only touch things when enc_buffer==0
