@@ -5,12 +5,11 @@
 void android_log(android_LogPriority type, const char *fmt, ...)
 {
     static char buf[1024];
-    static char *bp = buf;
 
     va_list vl;
     va_start(vl, fmt);
-    int available = sizeof(buf) - (bp - buf);
-    int nout = vsnprintf(bp, available, fmt, vl);
+
+    int nout = vsnprintf(buf, sizeof(buf), fmt, vl);
     __android_log_write(type, "native", buf);
     va_end(vl);
 }
