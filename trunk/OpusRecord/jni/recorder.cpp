@@ -64,8 +64,6 @@ static void killBuffer()
 	pthread_mutex_unlock( &g_buffer_mutex );
 }
 
-
-
 static float getVolume()
 {
 	pthread_mutex_lock( &g_buffer_mutex );
