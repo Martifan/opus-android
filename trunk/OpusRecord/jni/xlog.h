@@ -10,11 +10,9 @@ void android_log(android_LogPriority type, const char *fmt, ...);
 #define LOGI(...) android_log(ANDROID_LOG_INFO, __VA_ARGS__)
 #define LOGW(...) android_log(ANDROID_LOG_WARN, __VA_ARGS__)
 #define LOGE(...) android_log(ANDROID_LOG_ERROR, __VA_ARGS__)
+#define LOGV(...) android_log(ANDROID_LOG_VERBOSE, __VA_ARGS__)
 
 
-#ifdef __cplusplus
-extern "C"
-#endif
 void xassert_failed(const char *, int, const char *, const char *);
 
 #define	xassert(e)	((e) ? (void)0 : xassert_failed(__FILE__, __LINE__, __func__, #e))
