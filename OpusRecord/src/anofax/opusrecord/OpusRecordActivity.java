@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,15 +20,20 @@ import android.widget.Button;
 public class OpusRecordActivity extends Activity {
 	boolean _isRunning = false;	
 	String _fname = null;
+	Button _b;
 	
 	class EncThread extends Thread {
 		@Override		
 		public void run(){
-			Native.encode(_fname);
+			Native.encode(_fname, 16000);
+			runOnUiThread( new Runnable(){
+				public void run(){
+				_b.setText("Start Encoder");
+				_isRunning = false;
+			}});
 		}
 	}
 	EncThread _encoder = null;
-
 	
 	
 	@Override
@@ -40,7 +44,6 @@ public class OpusRecordActivity extends Activity {
 	
 	void doStop(){
 		Native.stopRecorder();
-		_isRunning=false;
 		try {
 			_encoder.join();
 		} catch (InterruptedException e) {}
@@ -88,19 +91,30 @@ public class OpusRecordActivity extends Activity {
 		return true;
 	}
 
+	void volumeThread(){
+		new Thread(){ public void run(){
+				while(true){
+					float v = Native.volume();
+					Log.i("volume", ""+v);
+					if( v==289) break;
+				}	
+		}}.start();
+	}
+	
 	public void buttonClicked( View v ){
 		Button b = (Button) v;
+		_b = b;
 		if( _isRunning ){
 			doStop();
-			b.setText( "Start Recording");			
 		} else {
 			if( !createFileName())
 				return;
+			Native.startRecorder( 16000 );
 			_encoder = new EncThread();
 			_encoder.start();
-			Native.startRecorder();
 			b.setText( "Stop Recording");
 			_isRunning=true;
+			volumeThread();
 			
 		}
 	}
