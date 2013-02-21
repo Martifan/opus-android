@@ -3,6 +3,7 @@ package anofax.opusrecord;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -16,16 +17,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 public class OpusRecordActivity extends Activity {
 	boolean _isRunning = false;	
 	String _fname = null;
 	Button _b;
 	
+	//sampling rate, in Hz, of the recording
+	private int samplingRate;
+	
+	//text view for displaying volume
+	private TextView volumeDisplayTextView;
+	
+	private DecimalFormat df = new DecimalFormat("#.####");
+	
 	class EncThread extends Thread {
 		@Override		
 		public void run(){
-			Native.encode(_fname, 16000);
+			Native.encode(_fname, samplingRate);
 			runOnUiThread( new Runnable(){
 				public void run(){
 				_b.setText("Start Encoder");
@@ -94,9 +106,14 @@ public class OpusRecordActivity extends Activity {
 	void volumeThread(){
 		new Thread(){ public void run(){
 				while(true){
-					float v = Native.volume();
-					Log.i("volume", ""+v);
+					final float v = Native.volume();
+					Log.i("volume", ""+v);					
 					if( v==289) break;
+					//update volume display
+					runOnUiThread( new Runnable(){
+						public void run(){
+						volumeDisplayTextView.setText("Volume: "+df.format(v));
+					}});
 				}	
 		}}.start();
 	}
@@ -104,12 +121,37 @@ public class OpusRecordActivity extends Activity {
 	public void buttonClicked( View v ){
 		Button b = (Button) v;
 		_b = b;
+		
+		//sampling rate container
+		RelativeLayout samplingRateLayout = (RelativeLayout) findViewById(R.id.samplingRateLayout);	
+		//volume display field
+		volumeDisplayTextView = (TextView) findViewById(R.id.volumeDisplayTextView);
+		
 		if( _isRunning ){
 			doStop();
+			
+			//show sampling rate dropdown box
+			samplingRateLayout.setVisibility(View.VISIBLE);
+			//hide volume display field
+			volumeDisplayTextView.setVisibility(View.GONE);
+			
 		} else {
+
+			//get sampling rate selected from dropdown box
+			Spinner samplingRateSpinner = (Spinner) findViewById(R.id.samplingRateSpinner);
+			String samplingRateText = samplingRateSpinner.getSelectedItem().toString();
+			samplingRate =  Integer.parseInt(samplingRateText);
+			
+			Log.d("audio", "going to start recording, sampling rate is " + samplingRate);
+			
+			//hide sampling rate dropdown box
+			samplingRateLayout.setVisibility(View.GONE);
+			//show volume display field
+			volumeDisplayTextView.setVisibility(View.VISIBLE);
+			
 			if( !createFileName())
 				return;
-			Native.startRecorder( 16000 );
+			Native.startRecorder( samplingRate );
 			_encoder = new EncThread();
 			_encoder.start();
 			b.setText( "Stop Recording");

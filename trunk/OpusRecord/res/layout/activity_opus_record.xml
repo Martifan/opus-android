@@ -2,16 +2,57 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     tools:context=".OpusRecordActivity" >
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:gravity="center_horizontal"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/samplingRateLayout">
+    
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="15dp"
+	        android:text="Choose sampling rate/ Hz:" />
+	
+	    <Spinner
+	        android:id="@+id/samplingRateSpinner"
+	        android:layout_width="200dip"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView1"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="15dp"
+	        android:entries="@array/sampling_rate_array"
+	        android:prompt="@string/sampling_rate_prompt" />
+    
+    </RelativeLayout>
+    
+    <TextView
+        android:id="@+id/volumeDisplayTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/samplingRateLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="Volume:"
+        android:visibility="gone"
+       />
+    
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/volumeDisplayTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:onClick="buttonClicked"
         android:text="Start Recording" />
-
+    
 </RelativeLayout>
