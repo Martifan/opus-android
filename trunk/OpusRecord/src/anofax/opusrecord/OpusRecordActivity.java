@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,10 +30,22 @@ public class OpusRecordActivity extends Activity {
 	//sampling rate, in Hz, of the recording
 	private int samplingRate;
 	
+	/*handles to elements in the ui*/
+	//sampling rate container
+	private RelativeLayout samplingRateLayout;	
+	//volume display container
+	private RelativeLayout volumeDisplayLayout;
 	//text view for displaying volume
-	private TextView volumeDisplayTextView;
+	private TextView volumeDisplayTextView;	
+	//pointer on volume meter
+	private ImageView volumeMeterPointer;	
 	
 	private DecimalFormat df = new DecimalFormat("#.####");
+	
+	//UI mode "init" (recording not running)
+	private static final int UI_INIT = 0;
+	//UI mode "running" (recording running)
+	private static final int UI_RUNNING = 1;
 	
 	class EncThread extends Thread {
 		@Override		
@@ -40,6 +53,10 @@ public class OpusRecordActivity extends Activity {
 			Native.encode(_fname, samplingRate);
 			runOnUiThread( new Runnable(){
 				public void run(){
+				
+				 //update UI: recording not running
+				 setUiMode(UI_INIT);
+					
 				_b.setText("Start Encoder");
 				_isRunning = false;
 			}});
@@ -52,15 +69,29 @@ public class OpusRecordActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_opus_record);
+		
+		/*handles to elements in the ui*/
+		//sampling rate container
+		samplingRateLayout = (RelativeLayout) findViewById(R.id.samplingRateLayout);
+		//volume display container
+		volumeDisplayLayout = (RelativeLayout) findViewById(R.id.volumeDisplayLayout);
+		//text view for displaying volume
+		volumeDisplayTextView = (TextView) findViewById(R.id.volumeDisplayTextView);
+		//pointer on volume meter
+		volumeMeterPointer = (ImageView) findViewById(R.id.volumeMeterPointer);
 	}
 	
 	void doStop(){
+
+		//update UI: recording not running
+		setUiMode(UI_INIT);
+		
 		Native.stopRecorder();
 		try {
 			_encoder.join();
 		} catch (InterruptedException e) {}
 		_encoder = null;
-		MediaScannerConnection.scanFile(this, new String[]{_fname}, null, null );		  		
+		MediaScannerConnection.scanFile(this, new String[]{_fname}, null, null );				
 	}
 	
 	@Override	
@@ -104,7 +135,11 @@ public class OpusRecordActivity extends Activity {
 	}
 
 	void volumeThread(){
-		new Thread(){ public void run(){
+		new Thread(){ public void run(){	
+
+			//get scale for volume display
+			ImageView volumeMeter = (ImageView) findViewById(R.id.volumeMeter);
+			final float volumeMeterWidth = volumeMeter.getDrawable().getIntrinsicWidth();
 				while(true){
 					final float v = Native.volume();
 					Log.i("volume", ""+v);					
@@ -113,6 +148,8 @@ public class OpusRecordActivity extends Activity {
 					runOnUiThread( new Runnable(){
 						public void run(){
 						volumeDisplayTextView.setText("Volume: "+df.format(v));
+						//update volume meter
+						volumeMeterPointer.setPadding(((int) (v * 0.5f * volumeMeterWidth)),0,0,0);
 					}});
 				}	
 		}}.start();
@@ -121,20 +158,10 @@ public class OpusRecordActivity extends Activity {
 	public void buttonClicked( View v ){
 		Button b = (Button) v;
 		_b = b;
-		
-		//sampling rate container
-		RelativeLayout samplingRateLayout = (RelativeLayout) findViewById(R.id.samplingRateLayout);	
-		//volume display field
-		volumeDisplayTextView = (TextView) findViewById(R.id.volumeDisplayTextView);
-		
+
 		if( _isRunning ){
 			doStop();
-			
-			//show sampling rate dropdown box
-			samplingRateLayout.setVisibility(View.VISIBLE);
-			//hide volume display field
-			volumeDisplayTextView.setVisibility(View.GONE);
-			
+
 		} else {
 
 			//get sampling rate selected from dropdown box
@@ -144,10 +171,8 @@ public class OpusRecordActivity extends Activity {
 			
 			Log.d("audio", "going to start recording, sampling rate is " + samplingRate);
 			
-			//hide sampling rate dropdown box
-			samplingRateLayout.setVisibility(View.GONE);
-			//show volume display field
-			volumeDisplayTextView.setVisibility(View.VISIBLE);
+			//update UI: recording running
+			setUiMode(UI_RUNNING);
 			
 			if( !createFileName())
 				return;
@@ -159,6 +184,30 @@ public class OpusRecordActivity extends Activity {
 			volumeThread();
 			
 		}
+	}
+	
+    /**
+     * Updates the UI depending on whether the recorder is running or not.
+     * @param int mode The mode, UI_RUNNING if the recorder is running or UI_VIEW if it's not
+     */
+	private void setUiMode(int mode)
+	{
+		if (mode == UI_RUNNING)
+		{
+			//update UI for "running" mode
+			//hide sampling rate dropdown box
+			samplingRateLayout.setVisibility(View.GONE);
+			//show volume display field
+			volumeDisplayLayout.setVisibility(View.VISIBLE);
+		} else
+		{
+			//update UI for "init" mode
+			//show sampling rate dropdown box
+			samplingRateLayout.setVisibility(View.VISIBLE);
+			//hide volume display field
+			volumeDisplayLayout.setVisibility(View.GONE);
+		}
+		
 	}
 
 }
