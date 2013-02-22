@@ -6,12 +6,12 @@
     tools:context=".OpusRecordActivity" >
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:gravity="center_horizontal"
-    android:layout_centerHorizontal="true"
-    android:id="@+id/samplingRateLayout">
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:gravity="center_horizontal"
+	    android:layout_centerHorizontal="true"
+	    android:id="@+id/samplingRateLayout">
     
 	    <TextView
 	        android:id="@+id/textView1"
@@ -34,25 +34,53 @@
     
     </RelativeLayout>
     
-    <TextView
-        android:id="@+id/volumeDisplayTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/samplingRateLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:text="Volume:"
-        android:visibility="gone"
-       />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/samplingRateLayout"
+	    android:gravity="center_horizontal"
+	    android:layout_centerHorizontal="true"
+	    android:id="@+id/volumeDisplayLayout"
+	    android:visibility="gone">
+    
+	    <TextView
+	        android:id="@+id/volumeDisplayTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="15dp"
+	        android:layout_marginBottom="15dp"
+	        android:text="Volume:"
+	       />
+    
+        <ImageView
+  			android:id="@+id/volumeMeter"
+  			android:layout_below="@+id/volumeDisplayTextView"
+     		android:layout_width="280dp"
+     		android:adjustViewBounds="true"
+      		android:layout_height="wrap_content"
+    		android:src="@drawable/meter"
+    		/>
+        
+        <ImageView
+  			android:id="@+id/volumeMeterPointer"
+  			android:layout_below="@+id/volumeDisplayTextView"
+     		android:layout_width="wrap_content"
+      		android:layout_height="wrap_content"
+    		android:src="@drawable/pointer"
+    		/>
+	    
+    </RelativeLayout>
     
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/volumeDisplayTextView"
+        android:layout_below="@+id/volumeDisplayLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:onClick="buttonClicked"
         android:text="Start Recording" />
-    
+
 </RelativeLayout>
